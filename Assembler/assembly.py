@@ -10,3 +10,29 @@ opcode = {"add": ("00000", "A"), "sub": ("00001", "A"), "mov": (("00010", "B"), 
           "hlt": ("11010", "F")}
 reg_code =  {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R5': '101', 'R6': '110',
             'FLAGS': '111'}
+
+
+# define the ISA function
+# just adding the function name for now
+
+def add(x, y, z):
+    
+    #Performs reg1 =reg2 + reg3.If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    #get binary values of functions
+
+def sub(x, y, z):
+    
+    # Performs reg1 = reg2 + reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    
+def mul(x, y, z):
+    
+    # Performs reg1 = reg2 x reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    
+def div(x, y, z):
+    
+    # Performs reg3/reg4. Stores the quotient in R0 and the remainder in R1. 
+    # If reg4 is 0 then overflow flag is set and content of R0 and R1 are set to 0      
+
+def xor(x, y, z):
+    
+    # Performs bitwise XOR of reg2 and reg3. Stores the result in reg1.    
