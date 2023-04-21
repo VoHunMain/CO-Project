@@ -11,18 +11,16 @@ opcode = {"add": ("00000", "A"), "sub": ("00001", "A"), "mov": (("00010", "B"), 
           "not": ("01101", "C"), "cmp": ("01110", "C"), "jmp": ("01111", "E"), "jlt": ("11100", "E"),
           "jgt": ("11101", 'E'), "je": ("11111", 'E'),
           "hlt": ("11010", "F")}
-ocv = ["ld","st","jmp","jlt","jgt","je"]
+ocv = ["ld","st"]
 def variable_index(line):
     ind = 0
     if line[0] in ocv:
         if line[0]=="ld" or line[0]=="st":
             ind = 2
-        else:
-            ind = 1
     return ind
-
 inst = []
 reg = []
+label = []
 for j in opcode:
     inst.append(j)
 reg_code =  {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R5': '101', 'R6': '110',
@@ -44,19 +42,26 @@ instructions = []
 for line in f:
     l = line.strip()
     instructions.append(l)
-
+dict = {}
 #-----------------------------------------------
-
+correct = True
 #Now beggining the check if the given assembly code is correct or not:
 for i in instructions:
     l1=str(i).split(" ")
-
+    s = ""
+    for o in range(len(l1)):
+        if l1[0][len(l1[0])-1] == ":":
+            for k in range(0, len(l1[0])-1):
+                s += l1[0][k]
+            label.append(s)
+    print(label)
     # -----------------------------------------------
 
     # Checking part a: Typos in instruction name or register name
     #checking for the initial instruction
-    if l1[0] not in inst and l1[0]!="var":
-            f2.write("There is a typing error in the instruction name in line number "+str(instructions.index(i)+1)+"\n")
+    if l1[0] not in inst and l1[0]!="var" and l1[0][len(l1[0])-1]!=":":
+        correct = False
+        f2.write("There is a typing error in the instruction name in line number "+str(instructions.index(i)+1)+"\n")
 
     # -----------------------------------------------
 
@@ -64,6 +69,7 @@ for i in instructions:
     for m in range(len(l1)):
         if l1[m][0]=="R" and l1[0]!="var" and m not in vari:
             if l1[m] not in reg:
+                correct = False
                 f2.write("There is a typing error in the register name in line number " + str(
                     instructions.index(i) + 1) + "\n")
 
@@ -72,11 +78,32 @@ for i in instructions:
     #now checking any use of undefined variable
     if l1[0] in ocv:
         if l1[variable_index(l1)] not in vari:
+            correct = False
             f2.write("The variable "+l1[variable_index(l1)] + " used in line " +str(instructions.index(i)+1) + " is undefined ")
 
     # -----------------------------------------------
 
+    #checking that all the variables are declared at the starting of the assembly code
+
+    # -----------------------------------------------
+
     #now checking any undefined labels in the code
+    po = ["jmp","jlt","jgt","je"]
+    if l1[0] in po:
+        dict.update({l1[1]:[0,instructions.index(i)+1]})
+        print(dict)
+    for j in dict :
+        if j in label:
+            dict[j][0]=1
+    # print(dict)
+            # f2.write("The label "+"'"+str(l1[1])+"'"+" being used in line "+str(instructions.index(i)+1)+" has not been defined")
+for i in dict:
+    if dict[i][0]==0:
+        f2.write("The label " + "'" + str(i) + "'" + " being used in line " + str(dict[i][1])+ " has not been defined")
+
+
+
+
 
 
 
