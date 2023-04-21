@@ -11,6 +11,16 @@ opcode = {"add": ("00000", "A"), "sub": ("00001", "A"), "mov": (("00010", "B"), 
           "not": ("01101", "C"), "cmp": ("01110", "C"), "jmp": ("01111", "E"), "jlt": ("11100", "E"),
           "jgt": ("11101", 'E'), "je": ("11111", 'E'),
           "hlt": ("11010", "F")}
+ocv = ["ld","st","jmp","jlt","jgt","je"]
+def variable_index(line):
+    ind = 0
+    if line[0] in ocv:
+        if line[0]=="ld" or line[0]=="st":
+            ind = 2
+        else:
+            ind = 1
+    return ind
+
 inst = []
 reg = []
 for j in opcode:
@@ -20,9 +30,16 @@ reg_code =  {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R
 for j in reg_code:
     reg.append(j)
 f = open("opcode.txt","r")
-f2 = open("error_file.txt","w")
 f3 = open("binary_file.txt","w")
+vari = []
+for lines in f:
+    l2 = lines.split()
+    if l2[0]=="var":
+        vari.append(l2[1])
+f2 = open("error_file.txt","w")
+f.close()
 #creating a list to add each line of assembly instruction as an element of this list
+f = open("opcode.txt","r")
 instructions = []
 for line in f:
     l = line.strip()
@@ -33,16 +50,18 @@ for i in instructions:
     # Checking part a: Typos in instruction name or register name
     #checking for the initial instruction
     if l1[0] not in inst and l1[0]!="var":
-            isthere = True
             f2.write("There is a typing error in the instruction name in line number "+str(instructions.index(i)+1)+"\n")
     #now checking the typo in register name
-    for m in l1:
-        if m[0]=="R":
-            if m not in reg:
+    for m in range(len(l1)):
+        if l1[m][0]=="R":
+            if l1[m] not in reg:
                 f2.write("There is a typing error in the register name in line number " + str(
                     instructions.index(i) + 1) + "\n")
 
-
+    #now checking any use of undefined variable
+    if l1[0] in ocv:
+        if l1[variable_index(l1)] not in vari:
+            f2.write("The variable "+l1[variable_index(l1)] + " used in line " +str(instructions.index(i)+1) + " is undefined ")
 
 
 
