@@ -44,39 +44,39 @@ instructions = []
 for line in f:
     l = line.strip()
     instructions.append(l)
-    
+
 #-----------------------------------------------
 
 #Now beggining the check if the given assembly code is correct or not:
 for i in instructions:
     l1=str(i).split(" ")
 
-    # ----------------------------------------------- 
-    
+    # -----------------------------------------------
+
     # Checking part a: Typos in instruction name or register name
     #checking for the initial instruction
     if l1[0] not in inst and l1[0]!="var":
             f2.write("There is a typing error in the instruction name in line number "+str(instructions.index(i)+1)+"\n")
 
     # -----------------------------------------------
-    
+
     #now checking the typo in register name
     for m in range(len(l1)):
-        if l1[m][0]=="R":
+        if l1[m][0]=="R" and l1[0]!="var" and m not in vari:
             if l1[m] not in reg:
                 f2.write("There is a typing error in the register name in line number " + str(
                     instructions.index(i) + 1) + "\n")
 
     # -----------------------------------------------
-    
+
     #now checking any use of undefined variable
     if l1[0] in ocv:
         if l1[variable_index(l1)] not in vari:
             f2.write("The variable "+l1[variable_index(l1)] + " used in line " +str(instructions.index(i)+1) + " is undefined ")
 
     # -----------------------------------------------
-    
+
     #now checking any undefined labels in the code
-    
+
 
 
