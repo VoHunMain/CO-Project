@@ -1,6 +1,48 @@
 # co project
 # Vaibhav Gupta
 # Vaibhav Sehara
+
+# TYPE - A
+# Opcode(5 bits)  Unused(2 bits)   reg1(3 bits)   reg2(3 bits)   reg3(3 bits)
+
+def add(x, y, z):
+    
+    #Performs reg1 =reg2 + reg3.If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    #get binary values of functions
+    (opcode["add"][0]+"00"+reg_code[x]+reg_code[y]+reg_code[z])
+
+def sub(x, y, z):
+    
+    # Performs reg1 = reg2 + reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    append(opcode["sub"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
+    
+    
+def mul(x, y, z):
+    
+    # Performs reg1 = reg2 x reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    opcode["mul"][0] +"00"+reg_code[x] + reg_code[y] + reg_code[z]
+    
+def Or(x, y, z):
+    
+    # Performs reg3/reg4. Stores the quotient in R0 and the remainder in R1. 
+    # If reg4 is 0 then overflow flag is set and content of R0 and R1 are set to 0      
+    opcode["or"][0] + "00" + reg_code[a] + reg_code[b] + reg_code[c]
+
+def xor(x, y, z):
+    
+    # Performs bitwise XOR of reg2 and reg3. Stores the result in reg1.    
+    opcode["xor"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z]
+    
+    
+def And(x, y, z):
+    ## Appending the opcode of and instruction along with the syntax supposed for the and instruction
+   opcode["and"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z]
+
+
+# - --- ---- ----- ----------- ---------------- ---------- ----------------- ---------- --------- ------------- -------- ---------- -----------------------------
+
+
+
 blank_count = 0
 msg = ""
 isthere = False
