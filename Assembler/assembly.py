@@ -2,6 +2,11 @@
 # Vaibhav Gupta
 # Vaibhav Sehara
 
+#global variable FLAGS and Binary_code.
+
+flag = 0
+binary_code = []
+
 # TYPE - A -START
 
 # Opcode(5 bits)  Unused(2 bits)   reg1(3 bits)   reg2(3 bits)   reg3(3 bits)
@@ -10,26 +15,45 @@ def add(x, y, z):
     
     #Performs reg1 =reg2 + reg3.If the computation overflows, then the overflow flag is set and 0 is written in reg1
     #get binary values of functions
+    global flag
+    # Check for overflow
+    if int(registers[y], 2) + int(registers[z], 2) > int("1"*16, 2):
+        flag = 1
     
-    (opcode["add"][0]+"00"+reg_code[x]+reg_code[y]+reg_code[z])
+    # Add values in y and z registers and store in x register
+    registers[x] = bin(int(registers[y], 2) + int(registers[z], 2))[2:].zfill(16)
+     
+    binary_code.append(opcode["add"][0]+"00"+reg_code[x]+reg_code[y]+reg_code[z])
 
 def sub(x, y, z):
     
     # Performs reg1 = reg2 + reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    global flag  # access global flag variable
+
+    # check if subtraction will result in overflow
+    if registers[y] > registers[x] + registers[z]:
+        flag = 1
+    else:
+        flag = 0
+
+    # update register value and append binary code to list
+    registers[x] = registers[y] - registers[z]
     
-    append(opcode["sub"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
+    binary_code.append(opcode["sub"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
     
     
 def mul(x, y, z):
     
     # Performs reg1 = reg2 x reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
+    #checking for overflow and setting FLAG.
     
+    
+        
     opcode["mul"][0] +"00"+reg_code[x] + reg_code[y] + reg_code[z]
     
 def Or(x, y, z):
     
-    # Performs reg3/reg4. Stores the quotient in R0 and the remainder in R1. 
-    # If reg4 is 0 then overflow flag is set and content of R0 and R1 are set to 0   
+    # Performs bitwise OR of reg2 and reg3. Stores the result in reg1.  
        
     opcode["or"][0] + "00" + reg_code[a] + reg_code[b] + reg_code[c]
 
