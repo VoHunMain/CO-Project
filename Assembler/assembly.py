@@ -23,7 +23,7 @@ def add(x, y, z):
     # Add values in y and z registers and store in x register
     registers[x] = bin(int(registers[y], 2) + int(registers[z], 2))[2:].zfill(16)
      
-    binary_code.append(opcode["add"][0]+"00"+reg_code[x]+reg_code[y]+reg_code[z])
+    binary_code.append (opcode["add"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 def sub(x, y, z):
     
@@ -79,13 +79,13 @@ def And(x, y, z):
 
 def mov_imm(x, y):
     
-    binary = bin(int(y[1:]))              # ---------> covert string to binary by removing the 0b.  
+    Binary = bin(int(y[1:]))              # ---------> covert string to binary by removing the 0b.  
     
     if(len(Binary[2:]) < 8):                           ##CHECKING IF LENGTH OF binary less than 8
         Zeroes = 8 - len(Binary[2:])                   ##Adding zeroes if required
         Imm = str ("0" * Zeroes) + Binary[2:]
     else:
-        imm = binary[2:]
+        imm = Binary[2:]
         
     opcode["mov"][0][0] + reg_code[x] + Imm          ## mov [0][0], as we have 2 "mov" function.
 
