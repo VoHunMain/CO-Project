@@ -2,9 +2,9 @@
 # Vaibhav Gupta
 # Vaibhav Sehara
 
-#global variable FLAGS and Binary_code.
-
-flag = 0
+#global variable FLAGS and binary_codeary_code.
+# registers = ["0000000000000000"] * 7  # R0 to R6
+flag = 0b00000000
 binary_code = []
 
 # TYPE - A -START
@@ -14,14 +14,16 @@ binary_code = []
 def add(x, y, z):
     
     #Performs reg1 =reg2 + reg3.If the computation overflows, then the overflow flag is set and 0 is written in reg1
-    #get binary values of functions
+    #get binary_codeary values of functions
     global flag
     # Check for overflow
     if int(registers[y], 2) + int(registers[z], 2) > int("1"*16, 2):
-        flag = 1
+        flag |= 0b01000000  # Set V flag if overflow occurs
+    else:
+        flag &= 0b10111111  # Clear V flag if no overflow occurs
     
     # Add values in y and z registers and store in x register
-    registers[x] = bin(int(registers[y], 2) + int(registers[z], 2))[2:].zfill(16)
+    registers[x] = binary_code(int(registers[y], 2) + int(registers[z], 2))[2:].zfill(16)
      
     binary_code.append (opcode["add"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
@@ -36,7 +38,7 @@ def sub(x, y, z):
     else:
         flag = 0
 
-    # update register value and append binary code to list
+    # update register value and append binary_codeary code to list
     registers[x] = registers[y] - registers[z]
     
     binary_code.append(opcode["sub"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
@@ -49,25 +51,25 @@ def mul(x, y, z):
     
     
         
-    opcode["mul"][0] +"00"+reg_code[x] + reg_code[y] + reg_code[z]
+    binary_code.append(opcode["mul"][0] +"00"+reg_code[x] + reg_code[y] + reg_code[z])
     
 def Or(x, y, z):
     
     # Performs bitwise OR of reg2 and reg3. Stores the result in reg1.  
        
-    opcode["or"][0] + "00" + reg_code[a] + reg_code[b] + reg_code[c]
+    binary_code.append(opcode["or"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 def xor(x, y, z):
     
     # Performs bitwise XOR of reg2 and reg3. Stores the result in reg1. 
        
-    opcode["xor"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z]
+    binary_code.append(opcode["xor"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
     
     
 def And(x, y, z):
     ## Appending the opcode of and instruction along with the syntax supposed for the and instruction
     
-   opcode["and"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z]
+  binary_code.append(opcode["and"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 # TYPE A - END
 
@@ -79,15 +81,110 @@ def And(x, y, z):
 
 def mov_imm(x, y):
     
-    Binary = bin(int(y[1:]))              # ---------> covert string to binary by removing the 0b.  
+    binary = bin(int(y[1:]))              # ---------> covert string to binary_codeary by removing the 0b.  
     
-    if(len(Binary[2:]) < 8):                           ##CHECKING IF LENGTH OF binary less than 8
-        Zeroes = 8 - len(Binary[2:])                   ##Adding zeroes if required
-        Imm = str ("0" * Zeroes) + Binary[2:]
+    if(len(binary[2:]) < 8):                           ##CHECKING IF LENGTH OF binary_codeary less than 8
+        extras = 8 - len(binary[2:])                   ##Adding extra zeroes if required
+        imm = str ("0" * extras) + binary[2:]
     else:
-        imm = Binary[2:]
+        imm = binary[2:]
         
-    opcode["mov"][0][0] + reg_code[x] + Imm          ## mov [0][0], as we have 2 "mov" function.
+    binary_code.append (opcode["mov"][0][0] + reg_code[x] + imm)        ## mov [0][0], as we have 2 "mov" function.
+
+
+def RightShift(x, y):
+    
+    #Right shifts reg1 by $Imm, where $Imm is a 7 bit value.
+    
+    binary = bin(int(y[1:]))                     # ---------> covert string to binary_codeary by removing the 0b. 
+    
+    if(len(binary[2:])<8):                       ##CHECKING IF LENGTH OF binary_codeary less than 8
+        extras = 8 - len(binary[2:])
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+
+    
+    binary_code.append(opcode["rs"][0] + reg_code[x] + imm)
+
+def LeftShift(x, y):
+    
+    #Left shifts reg1 by $Imm, where $Imm is a 7 bit value.
+    
+    binary = bin(int(y[1:]))                     # ---------> covert string to binary_codeary by removing the 0b.
+    
+    if(len(binary[2:])<8):                       #CHECKING IF LENGTH OF binary_codeary less than 8
+        extras = 8 - len(binary[2:])
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+
+    
+    binary_code.append(opcode["ls"][0] + reg_code[x] + imm)
+    
+
+##TYPE B ends
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+##TYPE C starts
+
+
+def MovReg(x, y):
+    
+    #Move content of reg2 into reg1.
+    
+    binary_code.append(opcode["mov"][1][0] + "00000" + reg_code[x] + reg_code[y])
+    
+
+def Div(x, y):
+    
+    #Performs reg3/reg4. Stores the quotient in R0 and the remainder in R1. 
+    # If reg4 is 0 then overflow flag is set and content of R0 and R1 are set to 0
+    
+    binary_code.append(opcode["div"][0] + "00000" + reg_code[x] + reg_code[y])
+    
+
+def Invert(x, y):
+    
+    #Performs bitwise NOT of reg2. Stores the result in reg1.
+    
+    binary_code.append(opcode["not"][0] + "00000" + reg_code[x] + reg_code[y])
+    
+
+def Compare(x, y):
+    
+    #Compares reg1 and reg2 and sets up the FLAGS register.
+    
+    global flag
+    
+    val_x = int(registers[x], 2)
+    val_y = int(registers[y], 2)
+    
+    # Set L flag if val_x < val_y
+    if val_x < val_y:
+        flag |= 0b00000100
+    else:
+        flag &= 0b11111011
+    
+    # Set G flag if val_x > val_y
+    if val_x > val_y:
+        flag |= 0b00001000
+    else:
+        flag &= 0b11110111
+    
+    # Set E flag if val_x == val_y
+    if val_x == val_y:
+        flag |= 0b00010000
+    else:
+        flag &= 0b11101111
+        
+
+    binary_code.append(opcode["cmp"][0] + "00000" + reg_code[x] + reg_code[y])
+
+
+#TYPE C ends
+
 
 
 blank_count = 0
@@ -117,7 +214,7 @@ reg_code =  {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R
 for j in reg_code:
     reg.append(j)
 f = open("opcode.txt","r")
-f3 = open("binary_file.txt","w")
+f3 = open("binary_codeary_file.txt","w")
 vari = []
 for lines in f:
     l2 = lines.split()
