@@ -35,11 +35,13 @@ def sub(x, y, z):
     # check if subtraction will result in overflow
     if registers[y] > registers[x] + registers[z]:
         flag[0] = 1
+        registers[int(x[1])] = "0000000000000000"
     else:
         flag[0] = 0
+        registers[x] = registers[y] - registers[z]
 
     # update register value and append binary_codeary code to list
-    registers[x] = registers[y] - registers[z]
+    
 
     binary_code.append(opcode["sub"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
