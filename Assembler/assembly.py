@@ -30,20 +30,21 @@ def add(x, y, z):
 
 def sub(x, y, z):
     # Performs reg1 = reg2 + reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
-    global flag  # access global flag variable
+    
+    subs = int(str(registers[int(y[1])]),2) - int(str(registers[int(z[1])]),2)
 
     # check if subtraction will result in overflow
-    if registers[y] > registers[x] + registers[z]:
+    if int(str(registers[int(y[1])]),2) > int(str(registers[int(x[1])]),2) + int(str(registers[int(z[1])]),2):
         flag[0] = 1
         registers[int(x[1])] = "0000000000000000"
     else:
         flag[0] = 0
-        registers[x] = registers[y] - registers[z]
+        registers[int(x[1])] = bin(subs).zfill(16)
 
     # update register value and append binary_codeary code to list
     
 
-    binary_code.append(opcode["sub"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
+    binary_code.append(str(opcode["sub"][0] + "00" + str(reg_code[x]) + str(reg_code[y]) + str(reg_code[z])))
 
 
 def mul(x, y, z):
@@ -58,7 +59,7 @@ def mul(x, y, z):
         flags[0] = "0"  # Clear V flag if no overflow
         registers[int(x[1])]=bin(mult).zfill(16)
     
-    registers[int(x[1])]=bin(mult)[2:].zfill(16)
+    
     binary_code.append(opcode["mul"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
