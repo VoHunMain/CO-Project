@@ -57,7 +57,7 @@ def mul(x, y, z):
         #registers[x] = "0000000000000000"  # Set reg1 to 0
     else:
         flags[0] = "0"  # Clear V flag if no overflow
-        registers[int(x[1])]=bin(mult).zfill(16)
+        registers[int(x[1])]=bin(mult)[2:].zfill(16)
     
     
     binary_code.append(opcode["mul"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
