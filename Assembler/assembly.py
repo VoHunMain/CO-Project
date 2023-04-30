@@ -202,17 +202,77 @@ def store(x, y):
     else:
         imm = binary[2:]
     
-    binary_code.append(opcode["store"[0] + "00000" + reg_code[x] + imm])
+    binary_code.append(opcode["st"[0] + "00000" + reg_code[x] + imm])
 
 
 # TYPE D ENDS HERE
 
 #TYPE E STARTS HERE
 
-def unconditional_jump()
+def unconditional_jump(address):
+    
+    # Jumps to mem_addr, where mem_addr is a memory address.
+    
+    binary = bin(address)
+    
+    if(len(binary[2:] < 8)):
+        extras = 8 - len(binary[2:]) ##Adding extra zeroes
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+        
+    binary_code.append(opcode["jmp"[0] + "00000" + imm])        
 
 
+def jumpifless(adress):
+    
+    # Jump to mem_addr if the less than flag is set (less than flag = 1), where mem_addr is a memory address.
+    
+    binary = bin(address)
+    
+    if(len(binary[2:] < 8)):
+        extras = 8 - len(binary[2:]) ##Adding extra zeroes
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+        
+    binary_code.append(opcode["jlt"[0] + "00000" + imm])
 
+
+def jumpifgreater(adress):
+    
+    # Jump to mem_addr if the greater than flag is set (greater than flag = 1), where mem_addr is a memory address.
+    
+    binary = bin(address)
+    
+    if(len(binary[2:] < 8)):
+        extras = 8 - len(binary[2:]) ##Adding extra zeroes
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+        
+    binary_code.append(opcode["jgt"[0] + "00000" + imm])       
+
+
+def jumpifgreater(adress):
+    
+    # Jump to mem_addr if the equal flag is set (equal flag = 1), where mem_addr is a memory address.
+    
+    binary = bin(address)
+    
+    if(len(binary[2:] < 8)):
+        extras = 8 - len(binary[2:]) ##Adding extra zeroes
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+        
+    binary_code.append(opcode["je"[0] + "00000" + imm])
+
+# TYPE E ENDS HERE 
+
+# TYPE F STARTS HERE
+
+    
 
     
 blank_count = 0
