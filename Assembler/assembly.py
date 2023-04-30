@@ -78,16 +78,15 @@ def And(x, y, z):
 # Opcode(5 bits)  Unused(1 bit)   reg1(3 bits)   Immediate value(7 bits)
 
 def mov_imm(x, y):
-    
-    binary = bin(int(y[1:]))  # ---------> covert string to binary_codeary by removing the 0b.
+    binary = bin(int(y))  # ---------> covert string to binary_codeary by removing the 0b.
 
     if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary_codeary less than 8
         extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
         imm = str("0" * extras) + binary[2:]
     else:
         imm = binary[2:]
-
-    binary_code.append(opcode["mov"][0][0] + reg_code[x] + imm)  ## mov [0][0], as we have 2 "mov" function.
+    registers[x]=binary[2:].zfill(16)
+    binary_code.append(str(opcode["mov"][0][0]) + str(reg_code["R"+str(x)]) + str(imm))
 
 
 def RightShift(x, y):
