@@ -85,8 +85,8 @@ def mov_imm(x, y):
         imm = str("0" * extras) + binary[2:]
     else:
         imm = binary[2:]
-    registers[x]=binary[2:].zfill(16)
-    binary_code.append(str(opcode["mov"][0][0]) + str(reg_code["R"+str(x)]) + str(imm))
+    registers[int(x[1])]=binary[2:].zfill(16)
+    binary_code.append(str(opcode["mov"][0][0]) + str(reg_code[x]) + str(imm)) ## mov [0][0], as we have 2 "mov" function.
 
 
 def RightShift(x, y):
