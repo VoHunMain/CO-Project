@@ -34,7 +34,7 @@ def sub(x, y, z):
     subs = int(str(registers[int(y[1])]),2) - int(str(registers[int(z[1])]),2)
 
     # check if subtraction will result in overflow
-    if int(str(registers[int(y[1])]),2) > int(str(registers[int(x[1])]),2) + int(str(registers[int(z[1])]),2):
+    if int(str(registers[int(z[1])]),2)>int(str(registers[int(y[1])]),2):
         flag[0] = 1
         registers[int(x[1])] = "0000000000000000"
     else:
