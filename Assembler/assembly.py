@@ -49,7 +49,13 @@ def mul(x, y, z):
     # checking for overflow and setting FLAG.
     mult = 0
     mult = int(str(registers[int(y[1])]),2)*int(str(registers[int(z[1])]),2)
-    registers[int(x[1])]=bin(mult).zfill(16)
+     if mult > int("1" * 16, 2):
+        flags[0] = "1"  # Set V flag if overflow occurs
+        #registers[x] = "0000000000000000"  # Set reg1 to 0
+    else:
+        flags[0] = "0"  # Clear V flag if no overflow
+        registers[int(x[1])]=bin(mult).zfill(16)
+    
     binary_code.append(opcode["mul"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
