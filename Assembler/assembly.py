@@ -2,7 +2,7 @@
 # Vaibhav Gupta
 # Vaibhav Sehara
 
-# global variable FLAGS and binary_codeary_code.
+# global variable FLAGS and binary_code.
 registers = ["0000000000000000"] * 7  # R0 to R6
 flag = [0] * 4   # V L G E
 binary_code = []
@@ -13,7 +13,7 @@ binary_code = []
 
 def add(x, y, z):
     # Performs reg1 =reg2 + reg3.If the computation overflows, then the overflow flag is set and 0 is written in reg1
-    # get binary_codeary values of functions
+    # get binary values of functions
     global flag
     # Check for overflow
     if int(registers[y], 2) + int(registers[z], 2) > int("1" * 16, 2):
@@ -41,7 +41,7 @@ def sub(x, y, z):
         flag[0] = 0
         registers[int(x[1])] = bin(subs)[2:].zfill(16)
 
-    # update register value and append binary_codeary code to list
+    # update register value and append binary code to list
     
 
     binary_code.append(str(opcode["sub"][0] + "00" + str(reg_code[x]) + str(reg_code[y]) + str(reg_code[z])))
@@ -51,7 +51,7 @@ def mul(x, y, z):
     # Performs reg1 = reg2 x reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
     # checking for overflow and setting FLAG.
     mult = 0
-    mult = int(str(registers[int(y[1])]),2)*int(str(registers[int(z[1])]),2)
+    mult = int(str(registers[int(y[1])]),2) * int(str(registers[int(z[1])]),2)
      if mult > int("1" * 16, 2):
         flags[0] = "1"  # Set V flag if overflow occurs
         #registers[x] = "0000000000000000"  # Set reg1 to 0
@@ -90,9 +90,9 @@ def And(x, y, z):
 # Opcode(5 bits)  Unused(1 bit)   reg1(3 bits)   Immediate value(7 bits)
 
 def mov_imm(x, y):
-    binary = bin(int(y))  # ---------> covert string to binary_codeary by removing the 0b.
+    binary = bin(int(y))  # ---------> covert string to binary by removing the 0b.
 
-    if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary_codeary less than 8
+    if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary less than 8
         extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
         imm = str("0" * extras) + binary[2:]
     else:
@@ -104,23 +104,27 @@ def mov_imm(x, y):
 def RightShift(x, y):
     # Right shifts reg1 by $Imm, where $Imm is a 7 bit value.
 
-    binary = bin(int(y[1:]))  # ---------> covert string to binary_codeary by removing the 0b.
+    binary = bin(int(y[1:]))  # ---------> covert string to binary by removing the 0b.
 
-    if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary_codeary less than 8
+    if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary less than 8
         extras = 8 - len(binary[2:])
         imm = str("0" * extras) + binary[2:]
     else:
         imm = binary[2:]
-
-    binary_code.append(opcode["rs"][0] + reg_code[x] + imm)
+        
+    # value = int(registers[x], 2)  # get current value in register x
+    # new_value = value >> imm  # perform the right shift operation
+    # registers[x] = format(new_value, '016b')  # store the new value in register x
+    
+    binary_code.append(opcode["rs"][0] + reg_code[x] + y[1:].zfill(7))
 
 
 def LeftShift(x, y):
     # Left shifts reg1 by $Imm, where $Imm is a 7 bit value.
 
-    binary = bin(int(y[1:]))  # ---------> covert string to binary_codeary by removing the 0b.
+    binary = bin(int(y[1:]))  # ---------> covert string to binary by removing the 0b.
 
-    if (len(binary[2:]) < 8):  # CHECKING IF LENGTH OF binary_codeary less than 8
+    if (len(binary[2:]) < 8):  # CHECKING IF LENGTH OF binary less than 8
         extras = 8 - len(binary[2:])
         imm = str("0" * extras) + binary[2:]
     else:
