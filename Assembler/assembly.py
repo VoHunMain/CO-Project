@@ -174,7 +174,47 @@ def Compare(x, y):
 
 # TYPE C ends
 
+# TYPE D starts here
 
+def load(x, y):
+    
+    # Loads data from mem_addr into reg1.
+    binary = bin(y)
+    
+    if (len(binary[2:] < 8)):
+        extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+        
+    binary_code.append(opcode["ld"][0] + "00000" + reg_code[x] + imm)
+
+
+def store(x, y):
+    
+    # Stores data from reg1 to mem_addr.
+    
+    binary = bin(y)
+    
+    if (len(binary[2:] < 8)):
+        extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
+        imm = str("0" * extras) + binary[2:]
+    else:
+        imm = binary[2:]
+    
+    binary_code.append(opcode["store"[0] + "00000" + reg_code[x] + imm])
+
+
+# TYPE D ENDS HERE
+
+#TYPE E STARTS HERE
+
+def unconditional_jump()
+
+
+
+
+    
 blank_count = 0
 msg = ""
 isthere = False
