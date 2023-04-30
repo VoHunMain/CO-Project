@@ -4,9 +4,8 @@
 
 # global variable FLAGS and binary_codeary_code.
 registers = ["0000000000000000"] * 7  # R0 to R6
-flag = 0b00000000
+flag = [0] * 4   # V L G E
 binary_code = []
-
 
 # TYPE - A -START
 
@@ -18,14 +17,15 @@ def add(x, y, z):
     global flag
     # Check for overflow
     if int(registers[y], 2) + int(registers[z], 2) > int("1" * 16, 2):
-        flag |= 0b01000000  # Set V flag if overflow occurs
+        flag[0] = 1 # Set V flag if overflow occurs
     else:
-        flag &= 0b10111111  # Clear V flag if no overflow occurs
+        flag [0] = 0  # Clear V flag if no overflow occurs
 
     # Add values in y and z registers and store in x register
-    registers[x] = binary_code(int(registers[y], 2) + int(registers[z], 2))[2:].zfill(16)
+    registers[x] = binary_code(int(registers[y], 2) + int(registers[z], 2)).zfill(16)
 
     binary_code.append(opcode["add"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
+
 
 
 def sub(x, y, z):
@@ -34,9 +34,9 @@ def sub(x, y, z):
 
     # check if subtraction will result in overflow
     if registers[y] > registers[x] + registers[z]:
-        flag = 1
+        flag[0] = 1
     else:
-        flag = 0
+        flag[0] = 0
 
     # update register value and append binary_codeary code to list
     registers[x] = registers[y] - registers[z]
@@ -78,6 +78,7 @@ def And(x, y, z):
 # Opcode(5 bits)  Unused(1 bit)   reg1(3 bits)   Immediate value(7 bits)
 
 def mov_imm(x, y):
+    
     binary = bin(int(y[1:]))  # ---------> covert string to binary_codeary by removing the 0b.
 
     if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary_codeary less than 8
@@ -153,21 +154,20 @@ def Compare(x, y):
 
     # Set L flag if val_x < val_y
     if val_x < val_y:
-        flag |= 0b00000100
+        flag[1] = 1
     else:
-        flag &= 0b11111011
+        flag[1] = 0
 
     # Set G flag if val_x > val_y
     if val_x > val_y:
-        flag |= 0b00001000
+        flag[2] = 1
     else:
-        flag &= 0b11110111
-
+        flag[2] = 0
     # Set E flag if val_x == val_y
     if val_x == val_y:
-        flag |= 0b00010000
+        flag[3] = 1
     else:
-        flag &= 0b11101111
+        flag[3] = 0
 
     binary_code.append(opcode["cmp"][0] + "00000" + reg_code[x] + reg_code[y])
 
