@@ -214,7 +214,7 @@ reg_code =  {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R
 for j in reg_code:
     reg.append(j)
 f = open("opcode.txt","r")
-f3 = open("binary_codeary_file.txt","w")
+f3 = open("binary_file.txt","w")
 vari = []
 for lines in f:
     l2 = lines.split()
