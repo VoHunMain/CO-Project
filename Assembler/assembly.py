@@ -47,7 +47,9 @@ def sub(x, y, z):
 def mul(x, y, z):
     # Performs reg1 = reg2 x reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
     # checking for overflow and setting FLAG.
-
+    mult = 0
+    mult = int(str(registers[int(y[1])]),2)*int(str(registers[int(z[1])]),2)
+    registers[int(x[1])]=bin(mult).zfill(16)
     binary_code.append(opcode["mul"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
