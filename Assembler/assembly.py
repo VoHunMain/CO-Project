@@ -39,7 +39,7 @@ def sub(x, y, z):
         registers[int(x[1])] = "0000000000000000"
     else:
         flag[0] = 0
-        registers[int(x[1])] = bin(subs).zfill(16)
+        registers[int(x[1])] = bin(subs)[2:].zfill(16)
 
     # update register value and append binary_codeary code to list
     
