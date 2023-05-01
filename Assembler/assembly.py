@@ -287,8 +287,13 @@ def jumpifgreater(adress):
 
 # TYPE F STARTS HERE
 
+def halt():
     
+    binary_code.append(opcode["hlt"[0] + "0" * 11])
+      
 
+    # TYPE F ENDS HERE
+    
     
 blank_count = 0
 msg = ""
