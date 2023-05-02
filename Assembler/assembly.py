@@ -147,10 +147,27 @@ def MovReg(x, y):
     registers[int(y[1])] = "0"*16
     binary_code.append(opcode["mov"][1][0] + "00000" + reg_code[x] + reg_code[y])
 
+# Initialize R0 and R1 to 0
+# reg["R0"] = 0
+# reg["R1"] = 0
 
-def Div(x, y):
+def div(x, y):
     # Performs reg3/reg4. Stores the quotient in R0 and the remainder in R1.
     # If reg4 is 0 then overflow flag is set and content of R0 and R1 are set to 0
+
+    # if  y == 0:
+    #     # set overflow flag and clear R0 and R1
+    #     flag[0] = 1
+    #     reg["R0"] = 0
+    #     reg["R1"] = 0
+    # else:
+    #     # perform division
+    #     quotient = registers[int(x[1])] // registers[int(y[1])]
+    #     remainder = registers[int(x[1])] %  registers[int(y[1])]
+    #     # store quotient in R0 and remainder in R1
+    #     reg["R0"] = quotient
+    #     reg["R1"] = remainder
+
 
     binary_code.append(opcode["div"][0] + "00000" + reg_code[x] + reg_code[y])
 
@@ -437,6 +454,12 @@ if(correct):
             mov_imm(l2[1][:2],inti)
         if l2[0]=="mov" and l2[2][0]!="$":
             MovReg(l2[1][:2],l2[2][:2])
+        if l2[0]=="div":
+            div(l2[1][:2] , l2[2][:2])
+        if l2[0]=="rs" and l2[2][0]!="$":
+            RightShift(l2[1][:2] , l2[2][:2])
+        if l2[0]=="ls" and l2[2][0]!="$":
+            LeftShift(l2[1][:2] , l2[2][:2])       
 fz = open("binary_file.txt","w")
 for zx in binary_code:
     fz.write(zx+"\n")
