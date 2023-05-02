@@ -459,7 +459,17 @@ if(correct):
         if l2[0]=="rs" and l2[2][0]!="$":
             RightShift(l2[1][:2] , l2[2][:2])
         if l2[0]=="ls" and l2[2][0]!="$":
-            LeftShift(l2[1][:2] , l2[2][:2])       
+            LeftShift(l2[1][:2] , l2[2][:2])
+        if l2[0]=="xor":
+            xor(l2[1][:2] , l2[2][:2] , l2[3][:2])
+        if l2[0]=="or":
+            Or(l2[1][:2] , l2[2][:2] , l2[3][:2])
+        if l2[0]=="and":
+            And(l2[1][:2] , l2[2][:2] , l2[3][:2])
+        if l2[0]=="not":
+            Invert(l2[1][:2], l2[2][:2])
+        if l2[0]=="hlt":
+            halt                             
 fz = open("binary_file.txt","w")
 for zx in binary_code:
     fz.write(zx+"\n")
