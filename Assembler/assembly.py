@@ -4,37 +4,38 @@
 
 # global variable FLAGS and binary_code.
 registers = ["0000000000000000"] * 7  # R0 to R6
-flag = [0] * 4   # V L G E
+mem_addr ={}
+flag = [0] * 4  # V L G E
 binary_code = []
+
 
 # TYPE - A -START
 
 # Opcode(5 bits)  Unused(2 bits)   reg1(3 bits)   reg2(3 bits)   reg3(3 bits)
-
 def add(x, y, z):
     # Performs reg1 =reg2 + reg3.If the computation overflows, then the overflow flag is set and 0 is written in reg1
     # get binary values of functions
     global flag
+    adds = int(str(registers[int(y[1])]), 2) + int(str(registers[int(z[1])]), 2)
     # Check for overflow
-    if int(registers[y], 2) + int(registers[z], 2) > int("1" * 16, 2):
-        flag[0] = 1 # Set V flag if overflow occurs
+    if int(str(registers[int(y[1])]), 2) + int(str(registers[int(z[1])]), 2) > int("1" * 16, 2):
+        flag[0] = 1  # Set V flag if overflow occurs
     else:
-        flag [0] = 0  # Clear V flag if no overflow occurs
+        flag[0] = 0  # Clear V flag if no overflow occurs
 
     # Add values in y and z registers and store in x register
-    registers[x] = binary_code(int(registers[y], 2) + int(registers[z], 2)).zfill(16)
+    registers[int(x[1])] = bin(adds)[2:].zfill(16)
 
     binary_code.append(opcode["add"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
-
 def sub(x, y, z):
     # Performs reg1 = reg2 + reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
-    
-    subs = int(str(registers[int(y[1])]),2) - int(str(registers[int(z[1])]),2)
+
+    subs = int(str(registers[int(y[1])]), 2) - int(str(registers[int(z[1])]), 2)
 
     # check if subtraction will result in overflow
-    if int(str(registers[int(z[1])]),2)>int(str(registers[int(y[1])]),2):
+    if int(str(registers[int(z[1])]), 2) > int(str(registers[int(y[1])]), 2):
         flag[0] = 1
         registers[int(x[1])] = "0000000000000000"
     else:
@@ -42,7 +43,6 @@ def sub(x, y, z):
         registers[int(x[1])] = bin(subs)[2:].zfill(16)
 
     # update register value and append binary code to list
-    
 
     binary_code.append(str(opcode["sub"][0] + "00" + str(reg_code[x]) + str(reg_code[y]) + str(reg_code[z])))
 
@@ -51,15 +51,14 @@ def mul(x, y, z):
     # Performs reg1 = reg2 x reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
     # checking for overflow and setting FLAG.
     mult = 0
-    mult = int(str(registers[int(y[1])]),2) * int(str(registers[int(z[1])]),2)
-     if mult > int("1" * 16, 2):
-        flags[0] = "1"  # Set V flag if overflow occurs
-        #registers[x] = "0000000000000000"  # Set reg1 to 0
+    mult = int(str(registers[int(y[1])]), 2) * int(str(registers[int(z[1])]), 2)
+    if mult > int("1" * 16, 2):
+        flag[0] = "1"  # Set V flag if overflow occurs
+        # registers[x] = "0000000000000000"  # Set reg1 to 0
     else:
-        flags[0] = "0"  # Clear V flag if no overflow
-        registers[int(x[1])]=bin(mult)[2:].zfill(16)
-    
-    
+        flag[0] = "0"  # Clear V flag if no overflow
+        registers[int(x[1])] = bin(mult)[2:].zfill(16)
+
     binary_code.append(opcode["mul"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
@@ -93,12 +92,13 @@ def mov_imm(x, y):
     binary = bin(int(y))  # ---------> covert string to binary by removing the 0b.
 
     if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary less than 8
-        extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
+        extras = 7 - len(binary[2:])  ##Adding extra zeroes if required
         imm = str("0" * extras) + binary[2:]
+        registers[int(x[1])] = "000000000"+str(imm)
     else:
-        imm = binary[2:]
-    registers[int(x[1])]=binary[2:].zfill(16)
-    binary_code.append(str(opcode["mov"][0][0]) + str(reg_code[x]) + str(imm)) ## mov [0][0], as we have 2 "mov" function.
+        registers[int(x[1])]="".zfill(16)
+    binary_code.append(
+        str(opcode["mov"][0][0]) +"0" +str(reg_code[x]) + str(imm))  ## mov [0][0], as we have 2 "mov" function.
 
 
 def RightShift(x, y):
@@ -111,12 +111,12 @@ def RightShift(x, y):
         imm = str("0" * extras) + binary[2:]
     else:
         imm = binary[2:]
-        
+
     # value = int(registers[x], 2)  # get current value in register x
     # new_value = value >> imm  # perform the right shift operation
     # registers[x] = format(new_value, '016b')  # store the new value in register x
-    
-    binary_code.append(opcode["rs"][0] + reg_code[x] + y[1:].zfill(7))
+
+    binary_code.append(opcode["rs"][0] + "0"+reg_code[x] + y[1:].zfill(7))
 
 
 def LeftShift(x, y):
@@ -142,7 +142,9 @@ def LeftShift(x, y):
 
 def MovReg(x, y):
     # Move content of reg2 into reg1.
-
+    cont1 = registers[int(y[1])]
+    registers[int(x[1])]=cont1
+    registers[int(y[1])] = "0"*16
     binary_code.append(opcode["mov"][1][0] + "00000" + reg_code[x] + reg_code[y])
 
 
@@ -191,110 +193,98 @@ def Compare(x, y):
 
 # TYPE D starts here
 
-def load(x, y):
-    
-    # Loads data from mem_addr into reg1.
-    binary = bin(y)
-    
-    if (len(binary[2:] < 8)):
-        extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
-        imm = str("0" * extras) + binary[2:]
-    else:
-        imm = binary[2:]
-        
-    binary_code.append(opcode["ld"][0] + "00000" + reg_code[x] + imm)
+# def load(x, y):
+#     # Loads data from mem_addr into reg1.
+#     if (len(binary[2:] < 8)):
+#         extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
+#         imm = str("0" * extras) + binary[2:]
+#     else:
+#         imm = binary[2:]
+#
+#     binary_code.append(opcode["ld"][0] + "00000" + reg_code[x] + imm)
 
 
 def store(x, y):
-    
     # Stores data from reg1 to mem_addr.
-    
-    binary = bin(y)
-    
-    if (len(binary[2:] < 8)):
-        extras = 8 - len(binary[2:])  ##Adding extra zeroes if required
-        imm = str("0" * extras) + binary[2:]
+
+    if (len(y) < 8):
+        extras = 7 - len(y)  ##Adding extra zeroes if required
+        imm = str("0" * extras) + y
     else:
         imm = binary[2:]
-    
+
     binary_code.append(opcode["st"[0] + "00000" + reg_code[x] + imm])
 
 
 # TYPE D ENDS HERE
 
-#TYPE E STARTS HERE
+# TYPE E STARTS HERE
 
 def unconditional_jump(address):
-    
     # Jumps to mem_addr, where mem_addr is a memory address.
-    
+
     binary = bin(address)
-    
-    if(len(binary[2:] < 8)):
-        extras = 8 - len(binary[2:]) ##Adding extra zeroes
-        imm = str("0" * extras) + binary[2:]
+
+    if (len(binary[2:]) < 8):
+        extras = 7 - len(binary[2:])  ##Adding extra zeroes
+        imm = str(str("0" * extras) + binary[2:])
     else:
-        imm = binary[2:]
-        
-    binary_code.append(opcode["jmp"[0] + "00000" + imm])        
+        imm = str(binary[2:])
+
+    binary_code.append(opcode["jmp"[0]] + "0000" + str(imm))
 
 
-def jumpifless(adress):
-    
+def jumpifless(address):
     # Jump to mem_addr if the less than flag is set (less than flag = 1), where mem_addr is a memory address.
-    
+
     binary = bin(address)
-    
-    if(len(binary[2:] < 8)):
-        extras = 8 - len(binary[2:]) ##Adding extra zeroes
-        imm = str("0" * extras) + binary[2:]
+
+    if (len(binary[2:]) < 8):
+        extras = 7 - len(binary[2:])  ##Adding extra zeroes
+        imm = str(str("0" * extras) + binary[2:])
     else:
-        imm = binary[2:]
-        
-    binary_code.append(opcode["jlt"[0] + "00000" + imm])
+        imm = str(binary[2:])
+
+    binary_code.append(opcode["jlt"][0] + "0000" + imm)
 
 
-def jumpifgreater(adress):
-    
+def jumpifgreater(address):
     # Jump to mem_addr if the greater than flag is set (greater than flag = 1), where mem_addr is a memory address.
-    
+
     binary = bin(address)
-    
-    if(len(binary[2:] < 8)):
-        extras = 8 - len(binary[2:]) ##Adding extra zeroes
-        imm = str("0" * extras) + binary[2:]
+
+    if (len(binary[2:]) < 8):
+        extras = 7 - len(binary[2:])  ##Adding extra zeroes
+        imm = str(str("0" * extras) + binary[2:])
     else:
-        imm = binary[2:]
-        
-    binary_code.append(opcode["jgt"[0] + "00000" + imm])       
+        imm = str(binary[2:])
+
+    binary_code.append(opcode["jgt"][0] + "0000" + str(imm))
 
 
-def jumpifgreater(adress):
-    
+def jumpifequal(address):
     # Jump to mem_addr if the equal flag is set (equal flag = 1), where mem_addr is a memory address.
-    
+
     binary = bin(address)
-    
-    if(len(binary[2:] < 8)):
-        extras = 8 - len(binary[2:]) ##Adding extra zeroes
+
+    if (len(binary[2:]) < 8):
+        extras = 7 - len(binary[2:])  ##Adding extra zeroes
         imm = str("0" * extras) + binary[2:]
     else:
         imm = binary[2:]
-        
-    binary_code.append(opcode["je"[0] + "00000" + imm])
 
-# TYPE E ENDS HERE 
+    binary_code.append(opcode["je"][0] + "0000" + str(imm))
+
+
+# TYPE E ENDS HERE
 
 # TYPE F STARTS HERE
 
 def halt():
-    
     binary_code.append(opcode["hlt"[0] + "0" * 11])
-      
+# TYPE F ENDS HERE
 
-    # TYPE F ENDS HERE
-    
-    
+
 blank_count = 0
 msg = ""
 isthere = False
@@ -378,24 +368,23 @@ for i in instructions:
         if l1[variable_index(l1)] not in vari:
             correct = False
             f2.write("The variable " + l1[variable_index(l1)] + " used in line " + str(
-                instructions.index(i) + 1) + " is undefined "+"\n")
+                instructions.index(i) + 1) + " is undefined " + "\n")
 
     # -----------------------------------------------
 
     # checking that all the variables are declared at the starting of the assembly code
     lines = []
-    for l in range(1,len(instructions)):
+    for l in range(1, len(instructions)):
         l2 = instructions[l].split(" ")
-        if l2[0]=="var":
-            for z in range(0,l):
-                if instructions[z].split(" ")[0]!="var":
-                    lines.append(l+1)
+        if l2[0] == "var":
+            for z in range(0, l):
+                if instructions[z].split(" ")[0] != "var":
+                    lines.append(l + 1)
     liney = set(lines)
-    if len(liney)!=0:
+    if len(liney) != 0:
         correct = False
     # -----------------------------------------------
     # Checking the misuse of labels as variables or vice versa
-
 
     # -----------------------------------------------
 
@@ -410,7 +399,7 @@ for i in instructions:
     # f2.write("The label "+"'"+str(l1[1])+"'"+" being used in line "+str(instructions.index(i)+1)+" has not been defined")
     # -----------------------------------------------
     # Checking for missing hlt instruction
-    hltit= False
+    hltit = False
     for qwe in instructions:
         if qwe == "hlt":
             hltit = True
@@ -419,18 +408,37 @@ for i in instructions:
 for oppy in vari:
     if oppy in label:
         correct = False
-        f2.write("You cannot use the same name "+str(oppy)+" for both variable and label \n")
+        f2.write("You cannot use the same name " + str(oppy) + " for both variable and label \n")
 if hltit:
-    if instructions[len(instructions)-1]!="hlt":
+    if instructions[len(instructions) - 1] != "hlt":
         f2.write("Please make hlt as your last instruction \n")
 else:
     f2.write("hlt statement missing...Please add a last hlt statement \n")
 for q in liney:
-    f2.write("The variable declared at line no."+str(q)+"should be declared in the beginning \n")
+    f2.write("The variable declared at line no." + str(q) + "should be declared in the beginning \n")
 for i in dict:
     if dict[i][0] == 0:
-        correct=False
-        f2.write("The label " + "'" + str(i) + "'" + " being used in line " + str(dict[i][1]) + " has not been defined"+"\n")
-
+        correct = False
+        f2.write("The label " + "'" + str(i) + "'" + " being used in line " + str(
+            dict[i][1]) + " has not been defined" + "\n")
+f2.close()
+f2 = open("opcode.txt","r")
+if(correct):
+    for linys in f2:
+        l2 = linys.split(" ")
+        if l2[0]=="var":
+            mem_addr.update({l2[1]:"0000000000000000"})
+        if l2[0]=="add":
+            add(l2[1][:2], l2[2][:2], l2[3][:2])
+        if l2[0]=="mul":
+            mul(l2[1][:2],l2[2][:2],l2[3][:2])
+        if l2[0]=="mov" and l2[2][0]=="$":
+            inti = int(l2[2][1:])
+            mov_imm(l2[1][:2],inti)
+        if l2[0]=="mov" and l2[2][0]!="$":
+            MovReg(l2[1][:2],l2[2][:2])
+fz = open("binary_file.txt","w")
+for zx in binary_code:
+    fz.write(zx+"\n")
 
 
