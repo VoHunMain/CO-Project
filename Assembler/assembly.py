@@ -93,14 +93,14 @@ for i in range(len(instructions)):
             break
         else:
             len_count += 1
-            
+
 # ----------------------------------------------
-    
+
     # Checking part a: Typos in instruction name or register name
     # checking for the initial instruction
     if l1[0] not in inst and l1[0] != "var" and l1[0][len(l1[0]) - 1] != ":":
         correct = False
-        f2.write("Error in line " + str(instructions.index(i) + 1) +": "+"Invalid operand "+ "\n")
+        f2.write("Error in line " + str(i + 1) +": "+"Invalid operand "+ "\n")
 
     # -----------------------------------------------
 
@@ -109,8 +109,7 @@ for i in range(len(instructions)):
         if l1[m][0] == "R" and l1[0] != "var" and m not in vari:
             if l1[m] not in reg:
                 correct = False
-                f2.write("Error in line number " + str(
-                    instructions.index(i) + 1) +": "+"Invalid register name"+ "\n")
+                f2.write("Error in line number " + str(i + 1) +": "+"Invalid register name"+ "\n")
 
     # -----------------------------------------------
 
@@ -118,7 +117,7 @@ for i in range(len(instructions)):
     if l1[0] in ocv:
         if l1[variable_index(l1)] not in vari:
             correct = False
-            f2.write("Error in line number "+str(instructions.index(i) + 1)+": "+"No variable name " + l1[variable_index(l1)] +"\n")
+            f2.write("Error in line number "+str(i + 1)+": "+"No variable name " + l1[variable_index(l1)] +"\n")
 
     # -----------------------------------------------
 
@@ -148,12 +147,12 @@ for i in range(len(instructions)):
     #now checking any undefined labels in the code
     # po = ["jmp", "jlt", "jgt", "je"]
     # if l1[0] in po:
-    #     dict.update({l1[1]: [0, instructions.index(i) + 1]})
+    #     dict.update({l1[1]: [0, instructions[i](i) + 1]})
     # for j in dict:
     #     if j in label:
     #         dict[j][0] = 1
     # print(dict)
-    # f2.write("The label "+"'"+str(l1[1])+"'"+" being used in line "+str(instructions.index(i)+1)+" has not been defined")
+    # f2.write("The label "+"'"+str(l1[1])+"'"+" being used in line "+str(instructions[i](i)+1)+" has not been defined")
     # -----------------------------------------------
     # Checking for missing hlt instruction
     # -----------------------------------------------
@@ -662,8 +661,10 @@ for linys in f2:
         f3=open("error_file.txt","w")
         f3.write("Error: No statement can be executed after the halt statement")
         f3.close()
-        
+
 if correct:
     fz = open("binary_file.txt", "w")
     for zx in binary_code:
         fz.write(zx + "\n")
+        
+     
