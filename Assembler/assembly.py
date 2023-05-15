@@ -290,7 +290,7 @@ def mov_imm(x, y):
 def RightShift(x, y,lines):
     # Right shifts reg1 by $Imm, where $Imm is a 7 bit value.
     if  x not in reg_code:
-        f3.write("Error in line number "+str(lines)+": "+"Invalid register name\n")
+        f3.write("Error in line number "+str(lines)+": "+"The register "+str(x)+" is not available\n")
         correct = False
         kyaa = False
     binary = bin(int(y))  # ---------> covert string to binary by removing the 0b.
@@ -299,7 +299,7 @@ def RightShift(x, y,lines):
         imm = str("0" * extras) + binary[2:]
         binary_code.append(opcode["rs"][0] + "0" + reg_code[x] + str(imm))
     else:
-        if len(binary)>7:
+        if len(binary)[2:]>7:
             f3.write("Error in line number "+str(lines)+": "+"The immediate value should not be more than 7 bits\n")
         imm = binary[2:]
 
@@ -359,10 +359,12 @@ def div(x, y,lines):
         binary_code.append(opcode["div"][0] + "00000" + reg_code[x] + reg_code[y])
 
 
-def Invert(x, y):
+def Invert(x, y,lines):
     # Performs bitwise NOT of reg2. Stores the result in reg1.
-
-    binary_code.append(opcode["not"][0] + "00000" + reg_code[x] + reg_code[y])
+    if x not in reg_code or y not in reg_code:
+        f3.write("Error in line number "+str(lines)+": "+"The register "+str(y)+" is not available\n")
+    else:
+        binary_code.append(opcode["not"][0] + "00000" + reg_code[x] + reg_code[y])
 
 
 def Compare(x, y):
@@ -567,7 +569,7 @@ for linys in f2:
         if len(l2)!=3:
             invalid_param(str(lines),"2","not")
         else:
-            Invert(l2[1], l2[2][:2])
+            Invert(l2[1], l2[2][::1],lines)
     if l2[0] == "cmp":
         lines+=1
         Compare(l2[1], l2[2][:2])
