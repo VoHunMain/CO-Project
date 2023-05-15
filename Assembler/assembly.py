@@ -2,8 +2,13 @@
 # Vaibhav Gupta
 # Vaibhav Sehara
 import random
-
-
+def check_int(x):
+    hai = True
+    for i in x:
+        if i not in num:
+            hai = False
+    return hai
+num = ["1","2","3","4","5","6","7","8","9"]
 def gbs(n):
     # Generate a random number with n bits
     number = random.getrandbits(n)
@@ -79,8 +84,7 @@ for i in instructions:
     # checking for the initial instruction
     if l1[0] not in inst and l1[0] != "var" and l1[0][len(l1[0]) - 1] != ":":
         correct = False
-        f2.write(
-            "There is a typing error in the instruction name in line number " + str(instructions.index(i) + 1) + "\n")
+        f2.write("Error in line " + str(instructions.index(i) + 1) +": "+"Invalid operand "+ "\n")
 
     # -----------------------------------------------
 
@@ -89,8 +93,8 @@ for i in instructions:
         if l1[m][0] == "R" and l1[0] != "var" and m not in vari:
             if l1[m] not in reg:
                 correct = False
-                f2.write("There is a typing error in the register name in line number " + str(
-                    instructions.index(i) + 1) + "\n")
+                f2.write("Error in line number " + str(
+                    instructions.index(i) + 1) +": "+"Invalid register name"+ "\n")
 
     # -----------------------------------------------
 
@@ -98,8 +102,7 @@ for i in instructions:
     if l1[0] in ocv:
         if l1[variable_index(l1)] not in vari:
             correct = False
-            f2.write("The variable " + l1[variable_index(l1)] + " used in line " + str(
-                instructions.index(i) + 1) + " is undefined " + "\n")
+            f2.write("Error in line number "+str(instructions.index(i) + 1)+": "+"No variable name " + l1[variable_index(l1)] +"\n")
 
     # -----------------------------------------------
 
@@ -179,7 +182,7 @@ f3 = open("error_file.txt","a")
 def add(x, y, z):
     # Performs reg1 =reg2 + reg3.If the computation overflows, then the overflow flag is set and 0 is written in reg1
     # get binary values of functions
-    if y not in registers or z not in registers:
+    if x not in reg_code or y not in reg_code or z not in reg_code:
         correct = False
     else:
         global flag
@@ -191,14 +194,15 @@ def add(x, y, z):
             flag[0] = 0  # Clear V flag if no overflow occurs
 
     # Add values in y and z registers and store in x register
-    registers[int(x[1])] = bin(adds)[2:].zfill(16)
+    if correct:
+        registers[int(x[1])] = bin(adds)[2:].zfill(16)
 
     binary_code.append(opcode["add"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
 def sub(x, y, z):
     # Performs reg1 = reg2 + reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
-    if y not in registers or z not in registers:
+    if y not in reg_code or z not in reg_code:
         correct = False
     else:
         subs = int(str(registers[int(y[1])]), 2) - int(str(registers[int(z[1])]), 2)
@@ -219,7 +223,7 @@ def sub(x, y, z):
 def mul(x, y, z):
     # Performs reg1 = reg2 x reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
     # checking for overflow and setting FLAG.
-    if y not in registers or z not in registers:
+    if y not in reg_code or z not in reg_code:
         correct = False
     else:
         mult = 0
@@ -234,25 +238,28 @@ def mul(x, y, z):
         binary_code.append(opcode["mul"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
-def Or(x, y, z):
+def Or(x, y, z,lines):
     # Performs bitwise OR of reg2 and reg3. Stores the result in reg1.
-    if y not in registers and z not in registers:
+    if x not in reg_code or y not in reg_code or z not in reg_code:
+        f3.write("Error in line number "+str(lines)+": "+"Please check the register name\n")
         correct = False
     else:
         binary_code.append(opcode["or"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
-def xor(x, y, z):
+def xor(x, y, z,lines):
     # Performs bitwise XOR of reg2 and reg3. Stores the result in reg1.
-    if y not in registers and z not in registers:
+    if x not in reg_code or y not in reg_code or z not in reg_code:
+        f3.write("Error in line number "+str(lines)+": "+"Please check the register name\n")
         correct = False
     else:
         binary_code.append(opcode["xor"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
-def And(x, y, z):
+def And(x, y, z,lines):
     ## Appending the opcode of and instruction along with the syntax supposed for the and instruction
-    if y not in registers and z not in registers:
+    if x not in reg_code or y not in reg_code or z not in reg_code:
+        f3.write("Error in line number "+str(lines)+": "+"Please check the register name\n")
         correct = False
     else:
         binary_code.append(opcode["and"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
@@ -268,6 +275,8 @@ def And(x, y, z):
 
 def mov_imm(x, y):
     binary = bin(int(y))  # ---------> covert string to binary by removing the 0b.
+    if x not in reg_code:
+        correct = False
     if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary less than 8
         extras = 7 - len(binary[2:])  ##Adding extra zeroes if required
         imm = str("0" * extras) + binary[2:]
@@ -278,33 +287,41 @@ def mov_imm(x, y):
         str(opcode["mov"][0][0]) + "0" + str(reg_code[x]) + str(imm))  ## mov [0][0], as we have 2 "mov" function.
 
 
-def RightShift(x, y):
+def RightShift(x, y,lines):
     # Right shifts reg1 by $Imm, where $Imm is a 7 bit value.
+    if  x not in reg_code:
+        f3.write("Error in line number "+str(lines)+": "+"Invalid register name\n")
+        correct = False
+        kyaa = False
     binary = bin(int(y))  # ---------> covert string to binary by removing the 0b.
-    if (len(binary[2:]) < 8):  ##CHECKING IF LENGTH OF binary less than 8
+    if (len(binary[2:]) < 8) and kyaa:  ##CHECKING IF LENGTH OF binary less than 8
         extras = 7 - len(binary[2:])
         imm = str("0" * extras) + binary[2:]
+        binary_code.append(opcode["rs"][0] + "0" + reg_code[x] + str(imm))
     else:
+        if len(binary)>7:
+            f3.write("Error in line number "+str(lines)+": "+"The immediate value should not be more than 7 bits\n")
         imm = binary[2:]
 
     # value = int(registers[x], 2)  # get current value in register x
     # new_value = value >> imm  # perform the right shift operation
     # registers[x] = format(new_value, '016b')  # store the new value in register x
 
-    binary_code.append(opcode["rs"][0] + "0" + reg_code[x] + str(imm))
 
-
-def LeftShift(x, y):
-    # Left shifts reg1 by $Imm, where $Imm is a 7 bit value.
+def LeftShift(x, y,lines):
+    if  x not in reg_code:
+        f3.write("Error in line number "+str(lines)+": "+"Invalid register name\n")
+        correct = False
+        kyaa = False
     binary = bin(int(y))  # ---------> covert string to binary by removing the 0b.
-
-    if (len(binary[2:]) < 8):  # CHECKING IF LENGTH OF binary less than 8
+    if (len(binary[2:]) < 8) and kyaa:  ##CHECKING IF LENGTH OF binary less than 8
         extras = 7 - len(binary[2:])
         imm = str("0" * extras) + binary[2:]
+        binary_code.append(opcode["rs"][0] + "0" + reg_code[x] + str(imm))
     else:
+        if len(binary)>7:
+            f3.write("Error in line number "+str(lines)+": "+"The immediate value should not be more than 7 bits\n")
         imm = binary[2:]
-
-    binary_code.append(opcode["ls"][0] + "0" + str(reg_code[x]) + str(imm))
 
 
 ##TYPE B ends
@@ -315,11 +332,13 @@ def LeftShift(x, y):
 
 
 def MovReg(x, y):
-    if y!="FLAGS" and type(y)==int:
+    if x not in reg_code or y not in reg_code :
+        correct = False
+    if y!="FL":
         cont1 = registers[int(y[1])]
         registers[int(x[1])] = cont1
         binary_code.append(opcode["mov"][1][0] + "00000" + reg_code[x] + reg_code[y])
-    elif y[:5] == "FLAGS":
+    elif y== "FL":
         adds = ""
         for zx in flag:
             adds+=str(zx)
@@ -329,12 +348,15 @@ def MovReg(x, y):
 # reg["R0"] = 0
 # reg["R1"] = 0
 
-def div(x, y):
+def div(x, y,lines):
     # Performs reg3/reg4. Stores the quotient in R0 and the remainder in R1.
     # If reg4 is 0 then overflow flag is set and content of R0 and R1 are set to 0
     #Doubtful
-
-    binary_code.append(opcode["div"][0] + "00000" + reg_code[x] + reg_code[y])
+    if x not in reg_code or y not in reg_code:
+        f3.write("Error in line "+str(lines)+": "+"Please check the register name")
+        correct = False
+    else:
+        binary_code.append(opcode["div"][0] + "00000" + reg_code[x] + reg_code[y])
 
 
 def Invert(x, y):
@@ -379,7 +401,7 @@ def load(x, y):
     if y in vari:
         data = mem_addr[y]
     else:
-        f2.write("The variable " + y + " has not been defined")
+        f2.write("Error in line number " + y + " has not been defined\n")
     binary_code.append(opcode["ld"][0] + "0" + reg_code[x] + y)
 
 
@@ -398,7 +420,6 @@ def store(x, y):
 # TYPE D ENDS HERE
 
 # TYPE E STARTS HERE
-print(vari)
 def unconditional_jump(address):
     global correct
     # Jump to mem_addr if the greater than flag is set (greater than flag = 1), where mem_addr is a memory address.
@@ -443,53 +464,127 @@ def jumpifequal(address):
 # TYPE E ENDS HERE
 
 # TYPE F STARTS HERE
-
+def invalid_param(line,n,func):
+    f3.write("Error in line number "+line+": "+func+" must contain "+n+" parameters\n")
 def halt():
     binary_code.append(opcode["hlt"][0] + "0" * 11)
-
+naa = True
 # TYPE F ENDS HERE
+lines = 0
 for linys in f2:
-    l2 = linys.split(" ")
+    l2 = linys.split()
     if l2[0] == "var":
+        lines+=1
         k = gbs(7)
         if len(k)<7:
             extra = 7-len(k)
             k = k+"0"*extra
         mem_addr.update({l2[1][:1]: [k, "0000000000000000"]})
     if l2[0] == "add":
-        add(l2[1][:2], l2[2][:2], l2[3][:2])
+        lines+=1
+        if len(l2)==4:
+            add(l2[1][:2], l2[2][:2], l2[3][:2])
+        else:
+            invalid_param(str(lines),"3","add")
+            correct = False
     if l2[0] == "mul":
-        mul(l2[1][:2], l2[2][:2], l2[3][:2])
+        lines+=1
+        if len(l2)==4:
+            mul(l2[1][:2], l2[2][:2], l2[3][:2])
+        else:
+            invalid_param(str(lines),"3","mul")
+            correct = False
     if l2[0] == "mov" and l2[2][0] == "$":
-        inti = int(l2[2][1:])
-        mov_imm(l2[1], inti)
+        lines+=1
+        inti = l2[2][1:]
+        for pag in inti:
+            if pag not in num:
+                naa =False
+        if len(l2)!=3 or naa == False:
+            correct = False
+        else:
+            mov_imm(l2[1], int(inti))
     if l2[0] == "mov" and l2[2][0] != "$":
-        MovReg(l2[1][:2], l2[2])
+        lines+=1
+        regg = ""
+        for z in range(2):
+            regg+=l2[2][z]
+        if len(l2)!=3 and regg not in reg_code:
+            correct = False
+        elif regg[0]=="F":
+            MovReg(l2[1], regg)
+        else:
+            MovReg(l2[1],regg)
+    if l2[0]=="st":
+        lines+=1
+        if l2[1] not in reg_code:
+            f3.write("Error in line "+str(lines)+": "+"Invalid operand\n")
+            correct = False
+    if l2[0]=="ld":
+        lines+=1
+        if l2[1] not in reg_code:
+            f3.write("Error in line " + str(lines) + ": " + "Invalid operand\n")
+            correct = False
     if l2[0] == "div":
-        div(l2[1][:2], l2[2][:2])
+        lines+=1
+        if len(l2)!=3:
+            invalid_param(str(lines),"2","div")
+            lenc = True
+        if not lenc:
+            div(l2[1], l2[2][::1],lines)
     if l2[0] == "rs":
-        RightShift(l2[1], str(l2[2][1:][:2]))
+        lines+=1
+        if len(l2)!=3:
+            invalid_param(str(lines),"2","rs")
+        else:
+            RightShift(l2[1], str(l2[2][1:][::1]),lines)
     if l2[0] == "ls":
-        LeftShift(l2[1][:2], l2[2][1:][:2])
+        lines+=1
+        if len(l2)!=3:
+            invalid_param(str(lines),"2","rs")
+        else:
+            LeftShift(l2[1], str(l2[2][1:][::1]),lines)
     if l2[0] == "xor":
-        xor(l2[1], l2[2], l2[3][:2])
+        lines+=1
+        if len(l2)!=4:
+            invalid_param(str(lines),"3","xor")
+        else:
+            xor(l2[1], l2[2], l2[3][::1],lines)
     if l2[0] == "or":
-        Or(l2[1], l2[2], l2[3][:2])
+        lines+=1
+        if len(l2)!=4:
+            invalid_param(str(lines),"3","xor")
+        else:
+            Or(l2[1], l2[2], l2[3][::1],lines)
     if l2[0] == "and":
-        And(l2[1], l2[2], l2[3][:2])
+        lines+=1
+        if len(l2)!=4:
+            invalid_param(str(lines),"3","xor")
+        else:
+            And(l2[1], l2[2], l2[3][::1],lines)
     if l2[0] == "not":
-        Invert(l2[1], l2[2][:2])
+        lines+=1
+        if len(l2)!=3:
+            invalid_param(str(lines),"2","not")
+        else:
+            Invert(l2[1], l2[2][:2])
     if l2[0] == "cmp":
+        lines+=1
         Compare(l2[1], l2[2][:2])
     if l2[0]== "jmp":
+        lines+=1
         unconditional_jump(l2[1][:2])
     if l2[0]== "jlt":
+        lines+=1
         jumpifless(l2[1][:2])
     if l2[0]== "je":
+        lines+=1
         jumpifequal(l2[1][:2])
     if l2[0]== "jgt":
+        lines+=1
         jumpifgreater(l2[1][:2])
     if l2[0] == "hlt":
+        lines+=1
         halt()
 if correct:
     fz = open("binary_file.txt", "w")
