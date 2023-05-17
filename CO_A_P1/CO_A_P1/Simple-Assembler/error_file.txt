@@ -1,0 +1,4 @@
+Error in line number 8: No variable name myvar
+Error in line number 9: No variable name myvar
+Error in line number myvar has not been defined
+Error in line number 10: No variable namemyvar
