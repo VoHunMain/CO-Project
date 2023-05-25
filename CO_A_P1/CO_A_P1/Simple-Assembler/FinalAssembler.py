@@ -216,6 +216,9 @@ def add(x, y, z):
     # get binary values of functions
     if x not in reg_code or y not in reg_code or z not in reg_code:
         correct = False
+    elif z == "FLAGS" or y == "FLAGS" or x=="FLAGS":
+        correct = False
+        f3.write("Illegal use of Flags register\n")
     else:
         global flag
         adds = int(str(registers[int(y[1])]), 2) + int(str(registers[int(z[1])]), 2)
@@ -224,18 +227,21 @@ def add(x, y, z):
             flag[0] = 1  # Set V flag if overflow occurs
         else:
             flag[0] = 0  # Clear V flag if no overflow occurs
+        binary_code.append(opcode["add"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
     # Add values in y and z registers and store in x register
     if correct:
         registers[int(x[1])] = bin(adds)[2:].zfill(16)
 
-    binary_code.append(opcode["add"][0] + "00" + reg_code[x] + reg_code[y] + reg_code[z])
 
 
 def sub(x, y, z):
     # Performs reg1 = reg2 + reg3. If the computation overflows, then the overflow flag is set and 0 is written in reg1
     if y not in reg_code or z not in reg_code:
         correct = False
+    elif z == "FLAGS" or y == "FLAGS":
+        correct = False
+        f3.write("Illegal use of Flags register\n")
     else:
         subs = int(str(registers[int(y[1])]), 2) - int(str(registers[int(z[1])]), 2)
 
@@ -547,14 +553,14 @@ for linys in f2:
         if l2[0] == "add":
             lines += 1
             if len(l2) == 4:
-                add(l2[1][:2], l2[2][:2], l2[3][:2])
+                add(l2[1][:2], l2[2], l2[3][::1])
             else:
                 invalid_param(str(lines), "3", "add")
                 correct = False
         if l2[0] == "sub":
             lines += 1
             if len(l2) == 4:
-                sub(l2[1][:2], l2[2][:2], l2[3][:2])
+                sub(l2[1][:2], l2[2], l2[3][::1])
             else:
                 invalid_param(str(lines), "3", "sub")
                 correct = False
