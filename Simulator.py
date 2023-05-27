@@ -44,7 +44,7 @@ def TypeC(code):
         r2 += code[i]
     list = [opcode, r1, r2]
     return list
-def typeD(code):
+def TypeD(code):
     # "5bit opcode"+ "1 Unused bit"+"1 reg of 3 bit "+ "mem_addr"
     opcode = ""
     for i in range(0, 5):
