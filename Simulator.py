@@ -44,3 +44,34 @@ def TypeC(code):
         r2 += code[i]
     list = [opcode, r1, r2]
     return list
+def typeD(code):
+    # "5bit opcode"+ "1 Unused bit"+"1 reg of 3 bit "+ "mem_addr"
+    opcode = ""
+    for i in range(0, 5):
+        opcode += code[i]
+    r1 = ""
+    mem_addr = ""
+    for i in range(6, 9):
+        r1 += code[i]
+    for i in range(9, 16):
+        mem_addr += code[i]
+    list = [opcode, r1, mem_addr]
+    return list
+def TypeE(code):
+    #"5 bit opcode" + "4 unused" + "7 mem_addr"
+    opcode = ""
+    for i in range(0,5):
+        opcode += code[i]
+    mem_addr=""
+    for i in range(9,16):
+        mem_addr+=code[i]
+    list = [opcode,mem_addr]
+    return list
+def TypeF(code):
+    #"5 bit opcode" + "11 UNUSED   "
+    opcode = ""
+    for i in range(0,5):
+        opcode += code[i]
+    list = [opcode]
+    return list
+
