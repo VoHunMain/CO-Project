@@ -75,3 +75,79 @@ def TypeF(code):
     list = [opcode]
     return list
 
+#-------------------------------------- 
+
+#registers
+registers = ["0000000000000000"] * 7  # R0 to R6
+
+#flags
+flag = [0] * 4  # V L G E
+
+#memory
+memory = ['0000000000000000']*256
+
+#program counter
+pc = 0
+
+def add(code):
+    r1 = code[7:10]
+    r2 = code[10:13]
+    r3 = code[13:]
+
+    flag[0] =  flag[1] = flag[2] =  flag[3] = 0   # Reset flags register
+
+    sum = int(registers[int(r2)], 2) + int(registers[int(r3)], 2)
+    # Checking for overflow
+    if sum > (2 ** 16) - 1:
+        flag[0] = 1  # Overflow bit set if overflow occurs
+        registers[r1] = bin(sum & 0xFFFF)[-16:] 
+        #0xFFFF to mask off the upper bits, we ensure that the  result is limited to 16 bits and can be safely stored in a 16-bit register.
+    else:
+        temp = bin(sum)[2:]
+        registers[r1] = '0' * (16 - len(temp)) + temp
+    
+    pc += 1  # Increment program counter
+    
+    return (1, False)
+
+
+def sub(code):
+    r1 = code[7:10]
+    r2 = code[10:13]
+    r3 = code[13:]
+
+    flag[0] = flag[1] = flag[2] = flag[3] = 0  # Reset flags register
+
+    difference = int(registers[int(r2)], 2) - int(registers[int(r3)], 2)
+    # Checking for underflow
+    if difference < 0:
+        flag[0] = 1  # Underflow bit set if underflow occurs
+        registers[r1] = bin(difference & 0xFFFF)[-16:]  # making sure result of substraction is less than 16 bit.
+    else:
+        temp = bin(difference)[2:]
+        registers[r1] = '0' * (16 - len(temp)) + temp
+
+    pc += 1  # Increment program counter
+
+    return (1, False)
+
+def mul(code):
+    r1 = code[7:10]
+    r2 = code[10:13]
+    r3 = code[13:]
+
+    flag[0] = flag[1] = flag[2] = flag[3] = 0  # Reset flags register
+
+    product = int(registers[int(r2)], 2) * int(registers[int(r3)], 2)
+    # Checking for overflow
+    # 2^16 - 1  =  1111111111111111 in binary. so, if the integer value of product is greater than integer value of maximum binary, then the binary value will also be greater.
+    if product > (2 ** 16) - 1: 
+        flag[0] = 1  # Overflow bit set if overflow occurs
+        registers[r1] = bin(product & 0xFFFF)[-16:]  
+    else:
+        temp = bin(product)[2:]
+        registers[r1] = '0' * (16 - len(temp)) + temp
+
+    pc += 1  # Increment program counter
+
+    return (1, False)
